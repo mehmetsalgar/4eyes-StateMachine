@@ -1,0 +1,34 @@
+<configuration>
+    <appender name="STDOUT" target="System.out" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%date{ISO8601}] [%-5level] [%logger{5}] [%thread] [%X{pekkoSource}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <root level="ERROR">
+        <appender-ref ref="ASYNC"/>
+    </root>
+
+    <logger name="org.aspectj" level="INFO" />
+    <logger name="org.springframework" level="ERROR" />
+    <logger name="com.datastax" level="INFO" />
+    <logger name="kafka" level="ERROR" />
+    <logger name="org.apache.kafka" level="ERROR" />
+    <logger name="org.apache.zookeeper" level="ERROR" />
+    <logger name="scala" level="WARN" />
+    <logger name="org.apache.pekko" level="WARN" />
+    <logger name="org.apache.pekko.projection" level="WARN" />
+    <logger name="org.salgar.fsm.pekko.foureyes.projections" level="DEBUG" />
+    <logger name="org.apache.pekko.projection.elasticsearch.internal" level="DEBUG" />
+    <logger name="org.salgar.fsm.pekko.elasticsearch" level="WARN" />
+    <logger name="org.salgar.fsm.pekko.elasticsearch.bulkprocessor" level="DEBUG" />
+    <logger name="org.apache.http" level="WARN" />
+    <logger name="org.elasticsearch" level="ERROR" />
+    <logger name="co.elastic.clients.elasticsearch" level="ERROR" />
+</configuration>

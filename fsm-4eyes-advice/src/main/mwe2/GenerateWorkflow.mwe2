@@ -1,0 +1,47 @@
+module org.salgar.fsm.pekko.foureyes.aspectj
+
+var javaPath = "src"
+var projectPackage = ""
+var umlModel = ""
+
+Workflow {
+
+	bean = org.salgar.fsm.pekko.xtend.uml.engine.UmlGeneratorStandaloneSetup : setupAspectJ {
+        config = {
+            javaGenPath = "src/main/java"
+            rootClass = "org.salgar.fsm.pekko.xtend.uml.templates.aspectj.AspectJGenerator"
+        }
+        doInit = true
+    }
+
+        component =  org.salgar.fsm.pekko.xtext.reader.XTextReader : aspectJReader  {
+            useJavaClassPath = true
+            uriFilter = org.eclipse.xtext.mwe.NameBasedFilter {
+                regularExpression = "${umlModel}"
+            }
+
+            register = setupAspectJ
+            loadResource = {
+                slot = "modelSlot"
+            }
+        }
+
+	component = org.eclipse.emf.mwe.utils.DirectoryCleaner : aspectJCleaner {
+		directory = "build/generated-sources/main/java"
+	}
+
+	component = org.salgar.fsm.pekko.xtend.uml.generator.FsmPekkoGeneratorComponent : aspectJGenerator {
+		register = setupAspectJ
+        slot = 'modelSlot'
+        globalVar = {
+            name = "project_package" value = "${projectPackage}"
+        }
+        outlet = {
+            path = "src/main/java"
+        }
+        outlet = {
+        	outletName = "gen-once"
+            path = javaPath
+        }
+    }
+}
