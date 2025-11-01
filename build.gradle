@@ -439,6 +439,7 @@ project(':fsm-4eyes-statemachine') {
     apply plugin: 'org.xtext.xtend'
     apply plugin: 'org.xtext.builder'
     apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'io.freefair.aspectj.post-compile-weaving'
 
     java {
         toolchain {
@@ -487,43 +488,18 @@ project(':fsm-4eyes-statemachine') {
         tests jarTests
     }
 
-    ant.lifecycleLogLevel = "DEBUG"
-
     compileScala {
-        dependsOn configurations.ajc.getTaskDependencyFromProjectDependency(true, "compileScala")
         options.compilerArgs << '-parameters'
-    }
 
-    tasks.register('weaveAspectJ') {
-        dependsOn compileScala
-
-        inputs.files(sourceSets.main.output.classesDirs)
-        outputs.dir(weaveOutputDir)
-
-        doLast {
-            // Directory to weave into (use first compiled output directory)
-            //def outputDir = sourceSets.main.output.classesDirs.files.first()
-            weaveOutputDir.mkdirs()
-
-            System.setProperty('project.package', "${props.PROJECT_PACKAGE}")
-
-            ant.taskdef(
-                    resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
-                    classpath: configurations.ajc.asPath
-            )
-
-            ant.iajc(
-                    source: "17",
-                    target: "17",
-                    showWeaveInfo: "true",
-                    destDir: weaveOutputDir,
-                    maxmem: "512m",
-                    fork: "true",
-                    // For inpath, include ALL class dirs
-                    inpath: sourceSets.main.output.classesDirs.asPath,
-                    aspectpath: configurations.aspects.asPath,
-                    classpath: configurations.aspectImplementation.asPath
-            )
+        ajc {
+            enabled = true
+            classpath
+            options {
+                aspectpath.setFrom configurations.aspects
+                compilerArgs = [
+                        "-showWeaveInfo"
+                ]
+            }
         }
     }
 
@@ -595,19 +571,6 @@ project(':fsm-4eyes-statemachine') {
     spotlessScala.dependsOn(generateXtextLanguage)
     compileJava.dependsOn(spotlessApply)
     compileScala.dependsOn(spotlessApply)
-    tasks.named('jar') {
-        dependsOn tasks.named('weaveAspectJ')
-
-        // Include only woven classes
-        from(weaveOutputDir)
-
-        // Exclude default classesDirs
-        exclude { FileTreeElement element ->
-            sourceSets.main.output.classesDirs.any { dir ->
-                element.file.toPath().startsWith(dir.toPath())
-            }
-        }
-    }
 }
 
 project(':fsm-4eyes-actionguard-impl') {
