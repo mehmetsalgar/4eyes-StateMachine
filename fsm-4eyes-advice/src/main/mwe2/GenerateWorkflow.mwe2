@@ -8,7 +8,7 @@ Workflow {
 
 	bean = org.salgar.fsm.pekko.xtend.uml.engine.UmlGeneratorStandaloneSetup : setupAspectJ {
         config = {
-            javaGenPath = "src/main/java"
+            javaGenPath = "build/generated-sources/main/java"
             rootClass = "org.salgar.fsm.pekko.xtend.uml.templates.aspectj.AspectJGenerator"
         }
         doInit = true
@@ -37,7 +37,7 @@ Workflow {
             name = "project_package" value = "${projectPackage}"
         }
         outlet = {
-            path = "src/main/java"
+            path = "build/generated-sources/main/java"
         }
         outlet = {
         	outletName = "gen-once"

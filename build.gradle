@@ -262,6 +262,138 @@ project(':customer-relationship-adapter-impl') {
     }
 }
 
+project(':fsm-4eyes-advice') {
+    apply plugin: 'java'
+    apply plugin: 'org.xtext.xtend'
+    apply plugin: 'org.xtext.builder'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'com.diffplug.spotless'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src/main/java', 'build/generated-sources/main/java']
+            }
+        }
+    }
+
+    configurations {
+        ajc
+        aspects
+        aspectsImplementation {
+            extendsFrom implementation
+            canBeResolved=true
+        }
+        implementation {
+            extendsFrom aspects
+        }
+        tests {
+            extendsFrom testImplementation
+        }
+    }
+
+    ant.lifecycleLogLevel = "INFO"
+
+    compileJava {
+        sourceCompatibility="1.8"
+        targetCompatibility="1.8"
+
+        dependsOn configurations.ajc.getTaskDependencyFromProjectDependency(true, "compileJava")
+
+        doLast{
+            ant.taskdef(
+                resource:"org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+                classpath: configurations.ajc.asPath)
+                ant.iajc(
+                        source: "17",
+                        target: "17",
+                        showWeaveInfo: "true",
+                        maxmem: "512m",
+                        fork: "true",
+                        destDir: sourceSets.main.java.classesDirectory.get().asFile.path,
+                        verbose: "false",
+                        logCommand: "false",
+                        classpath: configurations.aspectsImplementation.asPath)
+                {
+                    sourceroots {
+                        sourceSets.main.java.srcDirs.each {
+                            pathelement(location: it.absolutePath)
+                        }
+                    }
+                }
+        }
+    }
+
+    dependencies {
+        ajc "org.aspectj:aspectjtools:${versions.aspectjVersion}"
+        implementation "org.aspectj:aspectjrt:${versions.aspectjVersion}"
+
+        implementation "org.apache.pekko:pekko-actor-typed_${versions.scala.major}:${versions.pekko}"
+        implementation "org.apache.pekko:pekko-persistence-typed_${versions.scala.major}:${versions.pekko}"
+
+        implementation "ch.qos.logback:logback-classic"
+    }
+
+    spotless {
+        java {
+            target '**/*.java'
+            //licenseHeaderFile  "$rootDir/buildSrc/CopyrightHeader.java"
+            importOrder 'java', 'javax', 'org', 'com'
+            //eclipseFormatFile "$rootDir/buildSrc/formatter.xml"
+        }
+        format 'misc', {
+            target 'src/**/*.md', 'src/**/*.xml', 'src/**/*.xsd', 'src/**/*.xsl'
+            indentWithSpaces()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+    }
+
+    configurations {
+        mwe2 {
+            extendsFrom implementation
+        }
+    }
+
+    dependencies {
+        mwe2 "org.salgar.fsm.pekko:fsm-xtext-reader:${versions.frameworkVersion}"
+        mwe2 "org.salgar.fsm.pekko:fsm-xtend:${versions.frameworkVersion}"
+        mwe2 project(':fsm-4eyes-uml-model')
+        mwe2 'org.salgar.pekko.fsm:fsm-pekko-eclipse-dependencies:2.0.0-SNAPSHOT:repackaged'
+        mwe2 'javax.inject:javax.inject:1'
+        mwe2 'org.reflections:reflections:0.10.2'
+    }
+
+    tasks.register('generateXtextLanguage', JavaExec) {
+        def generatedFileDir = file("target/generated-sources")
+        outputs.dir generatedFileDir
+        mainClass = 'org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher'
+        classpath = configurations.mwe2
+        inputs.file('src/main/mwe2/GenerateWorkflow.mwe2').withPathSensitivity(PathSensitivity.RELATIVE)
+        outputs.dir('build/generated-sources')
+        args += "src/main/mwe2/GenerateWorkflow.mwe2"
+        args += "-p"
+        args += "rootPath=/${projectDir}/.."
+        args += "-p"
+        args += "umlModel=${props.UML_MODEL}"
+        args += "-p"
+        args += "projectPackage=${props.PROJECT_PACKAGE}"
+    }
+
+    generateXtext.dependsOn(generateXtextLanguage)
+    clean.dependsOn(cleanGenerateXtextLanguage)
+    spotlessJava.dependsOn(generateXtextLanguage)
+    compileJava.dependsOn(spotlessApply)
+    compileJava.dependsOn(generateXtextLanguage)
+
+}
+
 project(':fsm-4eyes-uml-model') {
     apply plugin: 'java'
 
@@ -445,7 +577,7 @@ project(':fsm-4eyes-statemachine') {
         implementation "org.aspectj:aspectjrt:${versions.aspectjVersion}"
         api "org.salgar.fsm.pekko:fsm-base:${versions.frameworkVersion}",
                 "org.salgar.fsm.pekko:fsm-pekkosystem:${versions.frameworkVersion}"
-        aspects "org.salgar.fsm.pekko:fsm-advice:${versions.frameworkVersion}"
+        aspects project(':fsm-4eyes-advice')
         api "org.apache.pekko:pekko-cluster-sharding-typed_${versions.scala.major}:${versions.pekko}"
         api 'com.fasterxml.jackson.core:jackson-databind'
     }
@@ -849,14 +981,14 @@ project(':fsm-4eyes-kafka') {
         api "io.confluent:kafka-streams-protobuf-serde:${versions.confluent}"
         implementation "org.projectlombok:lombok:${versions.lombok}"
         annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-        testImplementation "org.salgar.fsm.pekko:fsm-advice:${versions.frameworkVersion}"
         testImplementation project(':fsm-4eyes-statemachine-facade'),
                 project(':fsm-4eyes-actionguard-impl'),
                 project(':4eyes-address-check-impl'),
                 project(':4eyes-credit-score-impl'),
                 project(':4eyes-fraud-prevention-impl'),
                 project(':customer-relationship-adapter'),
-                project(':customer-relationship-adapter-impl')
+                project(':customer-relationship-adapter-impl'),
+                project(':fsm-4eyes-advice')
         testImplementation "org.apache.pekko:pekko-persistence-cassandra_${versions.scala.major}:${versions.pekkoCassandraPlugin}"
         testImplementation "org.apache.pekko:pekko-connectors-cassandra_${versions.scala.major}:${versions.pekkoConnectorsAll}"
         testImplementation "org.apache.pekko:pekko-persistence-query_${versions.scala.major}:${versions.pekko}"
@@ -1255,12 +1387,11 @@ project(':fsm-4eyes-application') {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter'
 
-        implementation "org.salgar.fsm.pekko:fsm-api:${versions.frameworkVersion}",
-                "org.salgar.fsm.pekko:fsm-elasticsearch:${versions.frameworkVersion}",
-                "org.salgar.fsm.pekko:fsm-advice:${versions.frameworkVersion}"
         implementation project(':fsm-4eyes-statemachine-facade'),
                 project(':fsm-4eyes-statemachine'),
                 project(':fsm-4eyes-actionguard-impl'),
+                project(':fsm-4eyes-advice'),
+                "org.salgar.fsm.pekko:fsm-api:${versions.frameworkVersion}",
                 project(':4eyes-address-check-impl'),
                 project(':4eyes-credit-score-impl'),
                 project(':4eyes-fraud-prevention-impl'),
@@ -1270,6 +1401,7 @@ project(':fsm-4eyes-application') {
                 project(':customer-relationship-adapter-impl'),
                 project(':fsm-4eyes-kafka'),
                 project(':fsm-4eyes-projections'),
+                "org.salgar.fsm.pekko:fsm-elasticsearch:${versions.frameworkVersion}",
                 project(':fsm-4eyes-elasticsearch-statemachine-adapter')
 
         implementation "org.apache.pekko:pekko-persistence-cassandra_${versions.scala.major}:${versions.pekkoCassandraPlugin}"
