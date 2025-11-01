@@ -4,15 +4,16 @@ buildscript {
     repositories {
         mavenCentral()
         mavenLocal()
+        gradlePluginPortal()
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
-        maven { url "https://plugins.gradle.org/m2/"}
         maven { url "https://oss.sonatype.org/content/repositories/snapshots"}
     }
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:3.5.6"
         classpath "io.freefair.gradle:lombok-plugin:8.14.1"
+        classpath "io.freefair.gradle:aspectj-plugin:9.0.0"
         classpath "org.xtext.builder:org.xtext.builder.gradle.plugin:4.0.0"
         classpath "com.diffplug.spotless:spotless-plugin-gradle:5.14.0"
         classpath 'org.asciidoctor:asciidoctor-gradle-jvm:4.0.3'
@@ -268,6 +269,7 @@ project(':fsm-4eyes-advice') {
     apply plugin: 'org.xtext.builder'
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'io.freefair.aspectj'
 
     java {
         toolchain {
@@ -279,59 +281,12 @@ project(':fsm-4eyes-advice') {
         main {
             java {
                 srcDirs = ['src/main/java', 'build/generated-sources/main/java']
+                include '**/*.java', '**/*.aj'
             }
         }
     }
 
-    configurations {
-        ajc
-        aspects
-        aspectsImplementation {
-            extendsFrom implementation
-            canBeResolved=true
-        }
-        implementation {
-            extendsFrom aspects
-        }
-        tests {
-            extendsFrom testImplementation
-        }
-    }
-
-    ant.lifecycleLogLevel = "INFO"
-
-    compileJava {
-        sourceCompatibility="1.8"
-        targetCompatibility="1.8"
-
-        dependsOn configurations.ajc.getTaskDependencyFromProjectDependency(true, "compileJava")
-
-        doLast{
-            ant.taskdef(
-                resource:"org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
-                classpath: configurations.ajc.asPath)
-                ant.iajc(
-                        source: "17",
-                        target: "17",
-                        showWeaveInfo: "true",
-                        maxmem: "512m",
-                        fork: "true",
-                        destDir: sourceSets.main.java.classesDirectory.get().asFile.path,
-                        verbose: "false",
-                        logCommand: "false",
-                        classpath: configurations.aspectsImplementation.asPath)
-                {
-                    sourceroots {
-                        sourceSets.main.java.srcDirs.each {
-                            pathelement(location: it.absolutePath)
-                        }
-                    }
-                }
-        }
-    }
-
     dependencies {
-        ajc "org.aspectj:aspectjtools:${versions.aspectjVersion}"
         implementation "org.aspectj:aspectjrt:${versions.aspectjVersion}"
 
         implementation "org.apache.pekko:pekko-actor-typed_${versions.scala.major}:${versions.pekko}"
