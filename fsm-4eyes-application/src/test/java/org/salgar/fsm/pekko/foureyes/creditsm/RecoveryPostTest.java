@@ -18,11 +18,11 @@ import org.salgar.fsm.pekko.foureyes.variables.PayloadVariableConstants;
 import org.salgar.pekko.fsm.foureyes.notifier.NotifierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -82,7 +82,7 @@ public class RecoveryPostTest {
     @Autowired
     private CreditSMRepository creditSMRepository;
 
-    @MockBean
+    @MockitoBean
     private NotifierService notifierService;
 
     @Autowired

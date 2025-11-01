@@ -5,9 +5,9 @@ buildscript {
         mavenCentral()
         mavenLocal()
         gradlePluginPortal()
-        maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/milestone" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots"}
+        maven { url="https://repo.spring.io/snapshot" }
+        maven { url="https://repo.spring.io/milestone" }
+        maven { url="https://oss.sonatype.org/content/repositories/snapshots"}
     }
 
     dependencies {
@@ -15,11 +15,11 @@ buildscript {
         classpath "io.freefair.gradle:lombok-plugin:8.14.1"
         classpath "io.freefair.gradle:aspectj-plugin:9.0.0"
         classpath "org.xtext.builder:org.xtext.builder.gradle.plugin:4.0.0"
-        classpath "com.diffplug.spotless:spotless-plugin-gradle:5.14.0"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:8.0.0"
         classpath 'org.asciidoctor:asciidoctor-gradle-jvm:4.0.3'
         classpath 'org.asciidoctor:asciidoctor-gradle-jvm-gems:4.0.3'
         classpath "com.cosminpolifronie.gradle:gradle-plantuml-plugin:1.6.0"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.18'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
         classpath "com.citi.helm:com.citi.helm.gradle.plugin:2.2.0"
         classpath "com.citi.helm-publish:com.citi.helm-publish.gradle.plugin:2.2.0"
     }
@@ -30,7 +30,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'org.springframework.boot' version '3.5.6'
-    id 'com.google.cloud.tools.jib' version '3.2.1'
+    id 'com.google.cloud.tools.jib' version '3.4.5'
 }
 
 
@@ -70,21 +70,23 @@ allprojects {
         }
     }
 
-    group 'org.salgar.fsm.pekko'
-    version '1.0-SNAPSHOT'
+    group='org.salgar.fsm.pekko'
+    version='1.0-SNAPSHOT'
 
     repositories {
-        maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/milestone" }
-        maven { url "https://packages.confluent.io/maven/"}
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots"}
-        maven { url "https://repository.apache.org/content/groups/staging/" }
+        maven { url="https://repo.spring.io/snapshot" }
+        maven { url="https://repo.spring.io/milestone" }
+        maven { url="https://packages.confluent.io/maven/"}
+        maven { url="https://oss.sonatype.org/content/repositories/snapshots"}
+        maven { url="https://repository.apache.org/content/groups/staging/" }
         mavenLocal()
         mavenCentral()
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
     idea {
         module {
@@ -95,7 +97,7 @@ allprojects {
 
     jar {
         manifest {
-            attributes 'Implementation-Title': project.archivesBaseName,
+            attributes 'Implementation-Title': base.archivesName,
                     'Implementation-Version': project.version
         }
     }
@@ -578,6 +580,10 @@ project(':fsm-4eyes-actionguard-impl') {
     apply plugin: 'java-library'
     apply plugin: 'io.freefair.lombok'
 
+    //compileJava {
+    //    options.compilerArgs << '-Xlint:unchecked'
+    //}
+
     dependencies {
         api project(':fsm-4eyes-model'),
                 project(':fsm-4eyes-statemachine-facade'),
@@ -613,24 +619,24 @@ project(':fsm-4eyes-protobuf') {
     sourceSets {
         main {
             java {
-                srcDirs = ['src/main/java', 'src/generated/main/java']
+                srcDirs = ['src/main/java', 'build/generated-sources/main/java']
             }
             proto {
-                srcDir 'src/generated/main/proto'
+                srcDir 'build/generated-sources/main/proto'
             }
         }
     }
 
     dependencies {
         //implementation 'com.google.protobuf:protobuf-lite:3.0.0'
-        implementation 'com.google.protobuf:protobuf-java:3.19.4'
+        implementation 'com.google.protobuf:protobuf-java:4.33.0'
     }
 
     protobuf {
-        generatedFilesBaseDir = "$projectDir/src/generated"
+        generatedFilesBaseDir = "$projectDir/build/generated-sources"
         protoc {
             // You still need protoc like in the non-Android case
-            artifact = 'com.google.protobuf:protoc:3.19.4'
+            artifact = 'com.google.protobuf:protoc:4.33.0'
         }
         generateProtoTasks {
             all().each { task ->
@@ -639,9 +645,9 @@ project(':fsm-4eyes-protobuf') {
         }
     }
 
-    clean {
-        delete protobuf.generatedFilesBaseDir
-    }
+    //clean {
+    //    delete protobuf.generatedFilesBaseDir
+    //}
 
     configurations {
         mwe2 {
@@ -675,8 +681,11 @@ project(':fsm-4eyes-protobuf') {
     clean.dependsOn(cleanGenerateXtextLanguage)
     tasks.named('processResources') {
         dependsOn generateXtextLanguage, generateProto
-        inputs.dir file('src/generated/main/proto')
+        inputs.dir file('build/generated-sources/main/proto')
     }
+    generateProto.dependsOn(generateXtextLanguage)
+    compileJava.dependsOn(generateXtextLanguage)
+    compileJava.dependsOn(generateProto)
 }
 
 project(':fsm-4eyes-converter') {
