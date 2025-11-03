@@ -134,4 +134,7 @@ sedCommand="${sedCommand}s|4eyes-statemachine|$1|g"
 sed "${sedCommand}" settings.gradle > settings_fork.gradle
 
 #gradle.properties
-sed "s|FourEyes|${camelCase}|g" gradle.properties > gradle_fork.properties
+sedCommand="s|FourEyes|${camelCase}|g"
+sedCommand="${sedCommand}s|org.salgar.fsm.pekko.foureyes|$2|g"
+sedCommand="${sedCommand}s|4eyes|$1|g"
+sed "${sedCommand}" gradle.properties > gradle_fork.properties
