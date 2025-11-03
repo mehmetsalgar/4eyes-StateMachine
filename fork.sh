@@ -61,7 +61,7 @@ mkdir -p "fsm-$1-elasticsearch-statemachine-adapter/src/main/mwe2"
 sedESSMAdapMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedESSMAdapMwe="${sedESSMAdapMwe}s|4eyes|$1|g"
 sed "${sedESSMAdapMwe}" "fsm-4eyes-elasticsearch-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-elasticsearch-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2"
-#fsm-pekko-***-projections-statemachine-adapter
+#fsm-***-projections-statemachine-adapter
 mkdir "fsm-$1-projections-statemachine-adapter"
 cp "fsm-4eyes-projections-statemachine-adapter/.scalafmt.conf" "fsm-$1-projections-statemachine-adapter"
 mkdir -p "fsm-$1-projections-statemachine-adapter/src/main/mwe2"
@@ -75,10 +75,10 @@ mkdir -p "fsm-$1-projections/src/main/scala/${groupId}"
 mkdir "fsm-$1-application"
 mkdir -p "fsm-$1-application/src/main/java/${groupId}"
 mkdir -p "fsm-$1-application/src/main/resources"
-mkdir -p "fsm-4eyes-application/src/main/jib/var/lib/fsm_pekko_$1_application"
-cp "fsm-4eyes-application/src/main/resources/bootstrap.yml" "fsm-pekko-$1-application/src/main/resources/bootstrap.yml"
-cp "fsm-4eyes-application/src/main/resources/logback.xml" "fsm-pekko-$1-application/src/main/resources/logback.xml"
-cp -R "fsm-4eyes-application/helm" "fsm-pekko-$1-application/helm"
+mkdir -p "fsm-4eyes-application/src/main/jib/var/lib/fsm_$1_application"
+cp "fsm-4eyes-application/src/main/resources/bootstrap.yml" "fsm-$1-application/src/main/resources/bootstrap.yml"
+cp "fsm-4eyes-application/src/main/resources/logback.xml" "fsm-$1-application/src/main/resources/logback.xml"
+cp -R "fsm-4eyes-application/helm" "fsm-$1-application/helm"
 
 camelCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=toupper(substr($0,1,1)) substr($0,2)} 1')
 hyphenCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=substr($0,1,1) substr($0,2)} 1')
@@ -107,7 +107,7 @@ sedApplicationYmlCommand="${sedApplicationYmlCommand}/multi\-credit\-score-sm\:/
 sedApplicationYmlCommand="${sedApplicationYmlCommand}/credit\-score-sm\:/{N;N;N;N;N;N;d;};"
 sedApplicationYmlCommand="${sedApplicationYmlCommand}/adress\-check\-sm\:/{N;N;N;N;N;N;d;};"
 sedApplicationYmlCommand="${sedApplicationYmlCommand}/fraud\-prevention\-sm\:/{N;N;N;N;N;N;d;}"
-sed "${sedApplicationYmlCommand}" "fsm-4eyes-application/src/main/resources/application.yml" > "fsm-pekko-$1-application/src/main/resources/application.yml"
+sed "${sedApplicationYmlCommand}" "fsm-4eyes-application/src/main/resources/application.yml" > "fsm-$1-application/src/main/resources/application.yml"
 
 #Helm
 sed "s|4eyes|$1|g" "fsm-4eyes-application/helm/values.yaml" > "fsm-$1-application/helm/values.yaml"
@@ -115,7 +115,7 @@ sed "s|foureyes|$1|g" "fsm-4eyes-application/helm/Chart.yaml" > "fsm-$1-applicat
 
 #settings.gradle
 sedCommand="s|fsm-4eyes-uml-model|fsm-$1-uml-model|g;"
-sedCommand="${sedCommand}s|fsm-4eyes-advice|fsm-pekko-$1-advice|g;"
+sedCommand="${sedCommand}s|fsm-4eyes-advice|fsm-$1-advice|g;"
 sedCommand="${sedCommand}s|fsm-4eyes-statemachine|fsm-$1-statemachine|g;"
 sedCommand="${sedCommand}s|fsm-4eyes-actionguard-impl|fsm-$1-actionguard-impl|g;"
 sedCommand="${sedCommand}s|fsm-4eyes-event-adapter|fsm-$1-event-adapter|g;"
