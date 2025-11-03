@@ -1,0 +1,32 @@
+plugins {
+    id('java-common-conventions')
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+//compileJava {
+//    options.compilerArgs << '-Xlint:unchecked'
+//}
+
+dependencies {
+    api project(':fsm-4eyes-model'),
+            project(':fsm-4eyes-statemachine-facade'),
+            project(':4eyes-address-check-api'),
+            project(':4eyes-credit-score-api'),
+            project(':4eyes-fraud-prevention-api'),
+            project(':4eyes-notifier-api'),
+            project(':customer-relationship-adapter')
+
+    api libs.fsm.api,
+            libs.fsm.base
+    implementation project(':fsm-4eyes-statemachine')
+    implementation libs.spring.context
+    implementation libs.lombok
+
+    testImplementation(libs.spring.boot.starter.test) {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

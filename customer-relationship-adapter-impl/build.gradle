@@ -1,0 +1,10 @@
+plugins {
+    id('java-common-conventions')
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+dependencies {
+    api project(':customer-relationship-adapter')
+    api libs.spring.context
+    api libs.sl4j.api
+}

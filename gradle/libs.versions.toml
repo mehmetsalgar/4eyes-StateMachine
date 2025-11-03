@@ -1,0 +1,93 @@
+[versions]
+framework = "1.0-SNAPSHOT"
+aspectj = "1.9.24"
+cassandra-plugin = "1.0.5"
+confluent = "6.1.0"
+groovy-all = "3.0.25"
+javax-annotation-api = "1.3.2"
+javax-inject = "1"
+lombok = "1.18.24"
+pekko = "1.2.1"
+pekko-cassandra-plugin = "1.1.0"
+pekko-connectors-all = "1.2.0"
+pekkomanagement = "1.1.1"
+pekko-http = "1.2.0"
+pekko-projections = "1.1.0"
+pekko-kafka-stream = "1.1.0"
+protobuf-java = "4.33.0"
+reflections = "0.10.2"
+scala = "2.13.12"
+scala-major = "2.13"
+scala3 = "3.3.1"
+scala3-major = "3"
+scalike-jdbc = "3.5.0"
+shapeless = "2.3.3"
+spock = "2.3-groovy-3.0"
+xtext = "2.40.0"
+
+[libraries]
+aspectj-rt = { group = "org.aspectj", name = "aspectjrt", version.ref = "aspectj"}
+aspectj-tools = { group = "org.aspectj", name = "aspectjtools", version.ref = "aspectj" }
+fsm-api = { group = "org.salgar.fsm.pekko", name = "fsm-api", version.ref = "framework" }
+fsm-base = { group = "org.salgar.fsm.pekko", name = "fsm-base", version.ref = "framework" }
+fsm-command = { group = "org.salgar.fsm.pekko", name = "fsm-command", version.ref = "framework" }
+fsm-converter = { group = "org.salgar.fsm.pekko", name = "fsm-converter", version.ref = "framework" }
+fsm-elasticsearch = { group ="org.salgar.fsm.pekko", name="fsm-elasticsearch", version.ref = "framework" }
+fsm-kafka = { group = "org.salgar.fsm.pekko", name = "fsm-kafka", version.ref = "framework" }
+fsm-pekkosystem = { group = "org.salgar.fsm.pekko", name = "fsm-pekkosystem", version.ref = "framework" }
+fsm-projections = { group = "org.salgar.fsm.pekko", name = "fsm-projections", version.ref = "framework" }
+fsm-statemachine-facade = { group = "org.salgar.fsm.pekko", name = "fsm-statemachine-facade", version.ref = "framework" }
+fsm-text-reader = { group ="org.salgar.fsm.pekko", name = "fsm-xtext-reader", version.ref = "framework"}
+fsm-xtend = { group = "org.salgar.fsm.pekko", name = "fsm-xtend", version.ref = "framework"}
+groovy-all = { group = "org.codehaus.groovy", name = "groovy-all", version.ref = "groovy-all" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
+javax-annotation-api = { group = "javax.annotation", name = "javax.annotation-api", version.ref = "javax-annotation-api"}
+javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javax-inject" }
+jnr-ffi = { group = "com.github.jnr", name = "jnr-ffi" }
+junit-platform-runner = { group = "org.junit.platform", name = "junit-platform-runner" }
+kafka-protobuf-serializer = { group = "io.confluent", name = "kafka-protobuf-serializer", version.ref = "confluent" }
+kafka-streams-protobuf-serde = { group = "io.confluent", name = "kafka-streams-protobuf-serde", version.ref = "confluent" }
+lmdbjava = { group = "org.lmdbjava", name = "lmdbjava" }
+logback = { group = "ch.qos.logback", name = "logback-classic" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+pekko-actor-typed = { group = "org.apache.pekko", name = "pekko-actor-typed_2.13", version.ref = "pekko" }
+pekko-cluster-sharding-typed = { group = "org.apache.pekko", name = "pekko-cluster-sharding-typed_2.13", version.ref = "pekko" }
+pekko-connectors-cassandra = { group = "org.apache.pekko", name = "pekko-connectors-cassandra_2.13", version.ref = "pekko-connectors-all" }
+pekko-connectors-kafka = { group = "org.apache.pekko", name = "pekko-connectors-kafka_2.13", version.ref = "pekko-kafka-stream" }
+pekko-connectors-kafka-cluster-sharding = { group = "org.apache.pekko", name = "pekko-connectors-kafka-cluster-sharding_2.13", version.ref = "pekko-kafka-stream" }
+pekko-discovery-kubernetes-api = { group = "org.apache.pekko", name = "pekko-discovery-kubernetes-api_2.13", version.ref = "pekkomanagement" }
+pekko-discovery = { group = "org.apache.pekko", name = "pekko-discovery_2.13", version.ref = "pekko" }
+pekko-http-core = { group = "org.apache.pekko", name = "pekko-http-core_2.13", version.ref = "pekko-http" }
+pekko-http = { group = "org.apache.pekko", name = "pekko-http_2.13", version.ref = "pekko-http" }
+pekko-management-cluster-http = { group = "org.apache.pekko", name = "pekko-management-cluster-http_2.13", version.ref = "pekkomanagement" }
+pekko-management-cluster-bootstrap = { group = "org.apache.pekko", name = "pekko-management-cluster-bootstrap_2.13", version.ref = "pekkomanagement" }
+pekko-persistence-cassandra = { group = "org.apache.pekko", name = "pekko-persistence-cassandra_2.13", version.ref = "pekko-cassandra-plugin" }
+pekko-persistence-query = { group = "org.apache.pekko", name = "pekko-persistence-query_2.13", version.ref = "pekko" }
+pekko-persistence-typed = { group = "org.apache.pekko", name = "pekko-persistence-typed_2.13", version.ref = "pekko" }
+pekko-projection-cassandra = { group = "org.apache.pekko", name = "pekko-projection-cassandra_2.13", version.ref = "pekko-projections" }
+pekko-projection-eventsourced = { group = "org.apache.pekko", name = "pekko-projection-eventsourced_2.13", version.ref = "pekko-projections" }
+pekko-serialization-jackson = { group = "org.apache.pekko", name = "pekko-serialization-jackson_2.13", version.ref = "pekko" }
+protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref ="protobuf-java" }
+reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
+scala-library = { group = "org.scala-lang", name = "scala-library", version.ref = "scala" }
+shapeless = { group = "com.chuusai", name = "shapeless_2.13", version.ref = "shapeless" }
+spock = { group = "org.spockframework", name = "spock-bom", version.ref = "spock" }
+spock-core = { group = "org.spockframework", name = "spock-core" }
+spock-spring = { group = "org.spockframework", name = "spock-spring"}
+spring-boot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure" }
+spring-boot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor" }
+spring-boot-starter = { group = "org.springframework.boot", name = "spring-boot-starter" }
+spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+spring-cloud-starter-kubernetes-fabric8-config = { group = "org.springframework.cloud", name = "spring-cloud-starter-kubernetes-fabric8-config" }
+spring-context = { group = "org.springframework", name = "spring-context"}
+spring-data-elasticsearch = { group = "org.springframework.data", name = "spring-data-elasticsearch" }
+spring-kafka = { group = "org.springframework.kafka", name = "spring-kafka" }
+spring-kafka-test = { group = "org.springframework.kafka", name = "spring-kafka-test" }
+spring-web = { group = "org.springframework", name = "spring-web" }
+sl4j-api = { group = "org.slf4j", name = "slf4j-api" }
+xtend-lib = { group = "org.eclipse.xtend", name = "org.eclipse.xtend.lib", version.ref = "xtext" }
+xtext = { group = "org.eclipse.xtext", name = "org.eclipse.xtext", version.ref = "xtext" }
+xtext-core = { group = "org.eclipse.xtext", name = "org.eclipse.xtext", version.ref = "xtext" }
+xtext-xbase = { group = "org.eclipse.xtext", name = "org.eclipse.xtext.xbase", version.ref = "xtext" }
+xtext-generator = { group = "org.eclipse.xtext", name = "org.eclipse.xtext.xtext.generator", version.ref = "xtext" }
+

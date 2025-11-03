@@ -1,7 +1,7 @@
-gradle/
 build/
 dist/*
 target/
+libs/
 lib_managed/
 src_managed/
 project/boot/

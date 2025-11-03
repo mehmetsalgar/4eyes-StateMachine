@@ -1,0 +1,120 @@
+plugins {
+    id("scala-common-conventions")
+    id 'org.xtext.xtend' version '4.0.0'
+    id 'org.xtext.builder' version '4.0.0'
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['build/generated-sources/main/scala', 'src/main/scala']
+        }
+        java {
+            srcDirs = ['build/generated-sources/main/java', 'src/main/java']
+        }
+    }
+    test {
+        scala {
+            srcDirs = [ 'src/test/scala']
+        }
+    }
+}
+
+spotless {
+    scala {
+        target 'build/generated-sources/main/scala/**/*.scala'
+        scalafmt().configFile('.scalafmt.conf')
+    }
+    java {
+        target 'build/generated-sources/main/java/**/*.java'
+        importOrder 'java', 'javax', 'org', 'com'
+    }
+    format 'misc', {
+        target 'src/**/*.md', 'src/**/*.xml', 'src/**/*.xsd', 'src/**/*.xsl'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+dependencies {
+    api libs.fsm.kafka
+    api project(':fsm-4eyes-command'),
+            project(':fsm-4eyes-converter'),
+            project(':fsm-4eyes-protobuf')
+
+    implementation libs.fsm.pekkosystem,
+            libs.fsm.api
+    implementation project(':fsm-4eyes-statemachine')
+    implementation libs.scala.library
+    implementation libs.spring.boot.autoconfigure
+    implementation libs.spring.kafka
+    implementation libs.pekko.cluster.sharding.typed
+    implementation libs.pekko.connectors.kafka.cluster.sharding
+    implementation libs.pekko.connectors.kafka
+    api libs.kafka.protobuf.serializer
+    api libs.kafka.streams.protobuf.serde
+    implementation libs.lombok
+    annotationProcessor libs.spring.boot.configuration.processor
+    testImplementation project(':fsm-4eyes-statemachine-facade'),
+            project(':fsm-4eyes-actionguard-impl'),
+            project(':4eyes-address-check-impl'),
+            project(':4eyes-credit-score-impl'),
+            project(':4eyes-fraud-prevention-impl'),
+            project(':customer-relationship-adapter'),
+            project(':customer-relationship-adapter-impl'),
+            project(':fsm-4eyes-advice')
+    testImplementation libs.pekko.persistence.cassandra
+    testImplementation libs.pekko.connectors.cassandra
+    testImplementation libs.pekko.persistence.query
+    testImplementation libs.pekko.persistence.typed
+    testImplementation libs.spring.boot.starter
+    testImplementation(libs.spring.boot.starter.test) {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation libs.spring.kafka.test
+}
+
+configurations {
+    mwe2 {
+        extendsFrom implementation
+    }
+}
+
+dependencies {
+    mwe2 libs.fsm.text.reader
+    mwe2 libs.fsm.xtend
+    mwe2 project(':fsm-4eyes-uml-model')
+    mwe2 'org.salgar.pekko.fsm:fsm-pekko-eclipse-dependencies:2.0.0-SNAPSHOT:repackaged'
+    mwe2 libs.javax.inject
+    mwe2 libs.reflections
+}
+
+tasks.register('generateXtextLanguage', JavaExec) {
+    def generatedFileDir = file("build/generated-sources")
+    outputs.dir generatedFileDir
+    mainClass = 'org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher'
+    classpath = configurations.mwe2
+    inputs.file('src/main/mwe2/GenerateWorkflow.mwe2').withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.dir('build/generated-sources')
+    args += "src/main/mwe2/GenerateWorkflow.mwe2"
+    args += "-p"
+    args += "rootPath=/${projectDir}/.."
+    args += "-p"
+    args += "umlModel=${UML_MODEL}"
+}
+
+test {
+    jvmArgs "-DSEED_NODES=${SEED_NODES}", "-DK8SSANDRA_PASSWORD=${K8SSANDRA_PASSWORD}"
+    useJUnitPlatform()
+}
+
+generateXtext.dependsOn(generateXtextLanguage)
+clean.dependsOn(cleanGenerateXtextLanguage)
+spotlessScala.dependsOn(generateXtextLanguage)
+spotlessJava.dependsOn(generateXtextLanguage)
+compileJava.dependsOn(spotlessJava)
+compileScala.dependsOn(spotlessScala)
+compileScala.dependsOn(compileJava)

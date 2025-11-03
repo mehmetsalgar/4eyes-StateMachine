@@ -1,0 +1,10 @@
+plugins {
+    id('java-common-conventions')
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+dependencies {
+    api project(':4eyes-credit-score-api')
+    api libs.spring.context
+    api libs.sl4j.api
+}

@@ -1,0 +1,127 @@
+plugins {
+    id("scala-common-conventions")
+    id 'org.xtext.xtend' version '4.0.0'
+    id 'org.xtext.builder' version '4.0.0'
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'io.freefair.aspectj.post-compile-weaving' version '9.0.0'
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['build/generated-sources/main/scala', 'src/main/scala', 'build/generated-sources/main/java', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+    test {
+        scala {
+            srcDirs = ['src/test/scala', 'build/generated-test-sources/test/java', 'src/test/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+}
+
+configurations {
+    ajc
+    aspects
+    implementation {
+        extendsFrom aspects
+    }
+    tests {
+        extendsFrom testImplementation
+    }
+}
+
+task jarTests(type: Jar, dependsOn: testClasses) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+}
+
+artifacts {
+    tests jarTests
+}
+
+compileScala {
+    options.compilerArgs << '-parameters'
+
+    ajc {
+        enabled = true
+        classpath
+        options {
+            aspectpath.setFrom configurations.aspects
+            compilerArgs = [
+                    "-showWeaveInfo"
+            ]
+        }
+    }
+}
+
+dependencies {
+    ajc libs.aspectj.tools
+    implementation libs.aspectj.rt
+    api libs.fsm.base,
+            libs.fsm.pekkosystem
+    aspects project(':fsm-4eyes-advice')
+    api libs.pekko.cluster.sharding.typed
+    api libs.jackson.databind
+}
+
+spotless {
+    scala {
+        target 'target/generated-sources/main/scala/**/*.scala'
+        scalafmt().configFile('.scalafmt.conf')
+    }
+    java {
+        importOrder 'java', 'javax', 'org', 'com'
+    }
+    format 'misc', {
+        target 'src/**/*.md', 'src/**/*.xml', 'src/**/*.xsd', 'src/**/*.xsl'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+configurations {
+    mwe2 {
+        extendsFrom implementation
+    }
+    aspectImplementation {
+        extendsFrom implementation
+        canBeResolved=true
+    }
+}
+
+dependencies {
+    mwe2 libs.fsm.text.reader
+    mwe2 libs.fsm.xtend
+    mwe2 project(':fsm-4eyes-uml-model')
+    mwe2 'org.salgar.pekko.fsm:fsm-pekko-eclipse-dependencies:2.0.0-SNAPSHOT:repackaged'
+    mwe2 libs.javax.inject
+    mwe2 libs.reflections
+}
+
+tasks.register('generateXtextLanguage', JavaExec) {
+    def generatedFileDir = file('build/generated-sources')
+    outputs.dir generatedFileDir
+    mainClass = 'org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher'
+    classpath = configurations.mwe2
+    inputs.file('src/main/mwe2/GenerateWorkflow.mwe2').withPathSensitivity(PathSensitivity.RELATIVE)
+    args += "src/main/mwe2/GenerateWorkflow.mwe2"
+    args += "-p"
+    args += "rootPath=/${projectDir}/.."
+    args += "-p"
+    args += "umlModel=${UML_MODEL}"
+}
+
+generateXtext.dependsOn(generateXtextLanguage)
+clean.dependsOn(cleanGenerateXtextLanguage)
+spotlessJava.dependsOn(generateXtextLanguage)
+spotlessScala.dependsOn(generateXtextLanguage)
+compileJava.dependsOn(spotlessApply)
+compileScala.dependsOn(spotlessApply)

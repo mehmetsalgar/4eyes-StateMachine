@@ -1,0 +1,54 @@
+plugins {
+    id 'scala'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    gradlePluginPortal()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://packages.confluent.io/maven/"}
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots"}
+}
+
+group 'org.salgar.fsm.pekko'
+version '1.0-SNAPSHOT'
+
+dependencyManagement {
+    applyMavenExclusions = false
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.0.0'
+        mavenBom 'org.springframework.data:spring-data-bom:2025.0.5'
+        mavenBom "org.eclipse.xtext:xtext-dev-bom:${xtextVersion}"
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.archivesBaseName,
+                'Implementation-Version': project.version
+    }
+}
+
+
+dependencies {
+    implementation libs.scala.library
+}
+
+bootJar {
+    enabled = false
+}

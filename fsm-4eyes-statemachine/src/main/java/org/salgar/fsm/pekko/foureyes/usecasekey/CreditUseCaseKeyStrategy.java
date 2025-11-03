@@ -1,9 +1,9 @@
 package org.salgar.fsm.pekko.foureyes.usecasekey;
 
+import java.util.Map;
+
 import org.salgar.fsm.pekko.api.UseCaseKeyStrategy;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 public class CreditUseCaseKeyStrategy implements UseCaseKeyStrategy {

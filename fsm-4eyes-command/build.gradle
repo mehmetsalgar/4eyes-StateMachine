@@ -1,0 +1,72 @@
+plugins {
+    id("java-common-conventions")
+    id 'org.xtext.xtend' version '4.0.0'
+    id 'org.xtext.builder' version '4.0.0'
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'io.freefair.lombok' version '8.14.1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/generated-sources/main/java']
+        }
+    }
+}
+
+dependencies {
+    api libs.fsm.command
+    implementation project(':fsm-4eyes-statemachine'),
+            project(':fsm-4eyes-protobuf'),
+            project(':fsm-4eyes-converter')
+    implementation libs.scala.library
+    implementation libs.spring.boot.autoconfigure
+    api libs.lombok
+}
+
+spotless {
+    java {
+        target '**/*.java'
+        importOrder 'java', 'javax', 'org', 'com'
+    }
+    format 'misc', {
+        target 'src/**/*.md', 'src/**/*.xml', 'src/**/*.xsd', 'src/**/*.xsl'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+configurations {
+    mwe2 {
+        extendsFrom implementation
+    }
+}
+
+dependencies {
+    mwe2 libs.fsm.text.reader
+    mwe2 libs.fsm.xtend
+    mwe2 project(':fsm-4eyes-uml-model')
+    mwe2 'org.salgar.pekko.fsm:fsm-pekko-eclipse-dependencies:2.0.0-SNAPSHOT:repackaged'
+    mwe2 libs.javax.inject
+    mwe2 libs.reflections
+}
+
+tasks.register('generateXtextLanguage', JavaExec) {
+    def generatedFileDir = file("build/generated-sources")
+    outputs.dir generatedFileDir
+    mainClass = 'org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher'
+    classpath = configurations.mwe2
+    inputs.file('src/main/mwe2/GenerateWorkflow.mwe2').withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.dir('build/generated-sources')
+    args += "src/main/mwe2/GenerateWorkflow.mwe2"
+    args += "-p"
+    args += "rootPath=/${projectDir}/.."
+    args += "-p"
+    args += "umlModel=${UML_MODEL}"
+}
+
+generateXtext.dependsOn(generateXtextLanguage)
+clean.dependsOn(cleanGenerateXtextLanguage)
+spotlessJava.dependsOn(generateXtextLanguage)
+compileJava.dependsOn(spotlessApply)

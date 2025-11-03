@@ -1,0 +1,131 @@
+plugins {
+    id("java-common-conventions")
+    id 'io.freefair.lombok' version '8.14.1'
+    id 'com.google.cloud.tools.jib' version  '3.4.5'
+    id 'com.citi.helm' version '2.2.0'
+    id 'com.citi.helm-publish' version '2.2.0'
+    id 'groovy'
+}
+
+dependencies {
+    implementation libs.spring.boot.starter
+
+    implementation project(':fsm-4eyes-statemachine-facade'),
+            project(':fsm-4eyes-statemachine'),
+            project(':fsm-4eyes-actionguard-impl'),
+            project(':fsm-4eyes-advice'),
+            libs.fsm.api,
+            project(':4eyes-address-check-impl'),
+            project(':4eyes-credit-score-impl'),
+            project(':4eyes-fraud-prevention-impl'),
+            project(':4eyes-notifier-api'),
+            project(':4eyes-notifier-impl'),
+            project(':customer-relationship-adapter'),
+            project(':customer-relationship-adapter-impl'),
+            project(':fsm-4eyes-kafka'),
+            project(':fsm-4eyes-projections'),
+            libs.fsm.elasticsearch,
+            project(':fsm-4eyes-elasticsearch-statemachine-adapter')
+    implementation libs.pekko.persistence.cassandra
+    implementation libs.pekko.persistence.query
+    implementation libs.pekko.persistence.typed
+    implementation libs.pekko.cluster.sharding.typed
+    implementation libs.pekko.serialization.jackson
+    testImplementation libs.groovy.all
+    testImplementation "org.codehaus.groovy:groovy-all:3.0.25"
+    testImplementation platform(libs.spock)
+    testImplementation libs.spock.core
+    testImplementation libs.spock.spring
+    testImplementation libs.junit.platform.runner
+
+    testImplementation(libs.spring.boot.starter.test) {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation libs.spring.kafka.test
+}
+
+jar {
+    enabled = false
+}
+
+test {
+    jvmArgs "-DSEED_NODES=${SEED_NODES}", "-DK8SSANDRA_PASSWORD=${K8SSANDRA_PASSWORD}"
+    useJUnitPlatform()
+}
+
+jib {
+    from {
+        image = 'azul/zulu-openjdk:17.0.2-17.32.13'
+        platforms {
+            platform {
+                architecture = 'amd64'
+                os = 'linux'
+            }
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
+        auth {
+            username = "${DOCKER_HUB_USER}"
+            password = "${DOCKER_HUB_PASSWORD}"
+        }
+    }
+    to {
+        image = "fsm-pekko.registry:5555/fsmpekko/${project.name}:${project.version}"
+        tags = ["${project.version}"]
+        auth {
+            username = "${DOCKER_UPLOAD_USER}"
+            password = "${DOCKER_UPLOAD_PASSWORD}"
+        }
+    }
+    extraDirectories {
+        permissions = [
+                'var/lib/fsm_pekko_4eyes_application': '644'
+        ]
+    }
+    allowInsecureRegistries = true
+}
+//tasks.build.dependsOn tasks.jib
+
+helm {
+    charts {
+        foureyes {
+            publish = true
+            chartName = 'fsm-pekko-4eyes-application'
+            chartVersion = "${project.version}"
+            sourceDir = file('helm')
+            filtering {
+                values.put 'imageRepository', jib.to.image
+                values.put 'imageTag', jib.to.tags.first()
+                values.put 'appVersion', jib.to.tags.first()
+            }
+        }
+    }
+    repositories {
+        fsmpekko {
+            url 'http://localhost:57157/repository/fsm-pekko-helm/'
+            credentials {
+                username = "${HELM_USER}"
+                password = "${HELM_PASSWORD}"
+            }
+        }
+    }
+    publishing {
+        repositories {
+            nexus {
+                url = uri('http://localhost:57157/')
+                repository = 'fsm-pekko-helm'
+                apiVersion = 'v1'
+                credentials {
+                    username = "${HELM_USER}"
+                    password = "${HELM_PASSWORD}"
+                }
+            }
+        }
+    }
+}
+
+bootJar {
+    enabled = true
+}

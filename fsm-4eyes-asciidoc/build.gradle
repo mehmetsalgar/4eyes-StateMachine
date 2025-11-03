@@ -1,0 +1,73 @@
+plugins {
+    id 'org.xtext.xtend' version '4.0.0'
+    id 'org.xtext.builder' version '4.0.0'
+    id 'org.asciidoctor.jvm.convert' version '4.0.3'
+    id 'org.asciidoctor.jvm.gems' version '4.0.3'
+    id "com.cosminpolifronie.gradle.plantuml" version '1.6.0'
+}
+
+repositories {
+    ruby.gems()
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs  = ['target/generated-sources/docs/asciidoc', 'src/main/resources']
+        }
+    }
+}
+
+configurations {
+    mwe2 {
+        extendsFrom implementation
+    }
+}
+
+dependencies {
+    mwe2 libs.fsm.text.reader
+    mwe2 libs.fsm.xtend
+    mwe2 project(':fsm-4eyes-uml-model')
+    mwe2 'org.salgar.pekko.fsm:fsm-pekko-eclipse-dependencies:2.0.0-SNAPSHOT:repackaged'
+    asciidoctorGems 'rubygems:rouge:4.5.1'
+}
+
+tasks.register('generateXtextLanguage', JavaExec) {
+    mainClass = 'org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher'
+    classpath = configurations.mwe2
+    inputs.file('src/main/mwe2/GenerateWorkflow.mwe2').withPathSensitivity(PathSensitivity.RELATIVE)
+    outputs.dir('build/generated-sources')
+    args += "src/main/mwe2/GenerateWorkflow.mwe2"
+    args += "-p"
+    args += "rootPath=/${projectDir}/.."
+}
+
+generateXtext.dependsOn(generateXtextLanguage)
+clean.dependsOn(cleanGenerateXtextLanguage)
+
+asciidoctor {
+    dependsOn asciidoctorGemsPrepare
+
+    options doctype: 'book'
+
+    baseDirFollowsSourceFile()
+
+    asciidoctorj {
+        requires 'rouge'
+        attributes 'build-gradle': file('build.gradle'),
+                'sourcedir': project.sourceSets.main.java.srcDirs[0],
+                'endpoint-url': 'http://example.org',
+                'source-highlighter': 'rouge',
+                'imagesdir': 'images',
+                'toc': 'left',
+                'icons': 'font',
+                'setanchors': '',
+                'idprefix': '',
+                'idseparator': '-',
+                'docinfo': 'shared'
+    }
+}
+
+plantUml {
+    render input: 'target/generated-sources/docs/puml/activity/**/*.puml', output: "${project.buildDir.absolutePath}/puml/activity", format: 'png', withMetadata: false
+}
