@@ -169,7 +169,7 @@ sedStarterCommand="/StreamConfig\.apply/{N;N;N;N;N;N;d;};"
 sedStarterCommand="${sedStarterCommand}/StreamConfig/d;"
 sedStarterCommand="${sedStarterCommand}/CreditSMProjection\.init/{N;N;N;d;};"
 sedStarterCommand="${sedStarterCommand}/CreditSMProjection/d;"
-sedStarterCommand="${sedStarterCommand}s|org.salgar.fsm.pekko.foureyes.credit|$2|g;"
+sedStarterCommand="${sedStarterCommand}s|org.salgar.fsm.pekko.foureyes.credit|$2.credit|g;"
 sedStarterCommand="${sedStarterCommand}s|org.salgar.fsm.pekko.foureyes|$2|g"
 sed "${sedStarterCommand}" "fsm-4eyes-application/src/main/java/org/salgar/fsm/pekko/foureyes/Starter.java" > "fsm-$1-application/src/main/java/${groupId}/Starter.java"
 

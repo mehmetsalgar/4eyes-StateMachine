@@ -2,6 +2,8 @@ package org.salgar.fsm.pekko.foureyes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+//import org.salgar.fsm.pekko.****.****.actions.config.(****SM)ActionConfiguration;
+//import org.salgar.fsm.pekko.****.****.guards.config.(****SM)GuardConfiguration;
 import org.salgar.fsm.pekko.foureyes.addresscheck.actions.config.AdressCheckSMActionConfiguration;
 import org.salgar.fsm.pekko.foureyes.addresscheck.guards.config.AdressCheckSMGuardConfiguration;
 import org.salgar.fsm.pekko.foureyes.credit.actions.config.CreditSMActionConfiguration;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Import({
+        //(*****SM)ActionConfiguration.class,
+        //(*****SM)GuardConfiguration.class,
         AdressCheckSMActionConfiguration.class,
         AdressCheckSMGuardConfiguration.class,
         CreditSMActionConfiguration.class,

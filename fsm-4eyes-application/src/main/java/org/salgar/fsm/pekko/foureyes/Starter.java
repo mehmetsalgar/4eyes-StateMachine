@@ -30,8 +30,10 @@ public class Starter {
     private final ActorService actorService;
     private final TopicProperties topicProperties;
     private final AskFacade askFacade;
+    //private final *****SMProjectionHandler *****SMProjectionHandler;
     private final CreditSMProjectionHandler creditSMProjectionHandler;
     private final OffsetFacade offsetFacade;
+    //private final ConsumerConfig<String, (****)SMCommand> (****)SMConsumerConfig;
     private final ConsumerConfig<String, CreditSMCommand> creditSMConsumerConfig;
     private final ConsumerConfig<String, CreditScoreSMCommand> creditScoreSMConsumerConfig;
     private final ConsumerConfig<String, MultiTenantCreditScoreSMCommand> multiTenantCreditScoreSMConsumerConfig;
@@ -43,6 +45,11 @@ public class Starter {
         log.info("FSM Pekko 4eyes Initialised!");
 
         log.info("Credit Stream initializing");
+        //******StreamConfig.apply(
+        //        ******SMConsumerConfig,
+        //        actorService,
+        //        topicProperties,
+        //        askFacade);
         CreditSMStreamConfig.apply(
                 creditSMConsumerConfig,
                 actorService,
@@ -78,6 +85,10 @@ public class Starter {
                 askFacade);
 
         log.info("Projection initializing");
+        //*****Projection.init(
+        //        actorService.actorSystem(),
+        //        *****SMProjectionHandler,
+        //        offsetFacade);
         CreditSMProjection.init(
                 actorService.actorSystem(),
                 creditSMProjectionHandler,
