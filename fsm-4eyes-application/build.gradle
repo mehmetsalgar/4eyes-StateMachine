@@ -32,7 +32,6 @@ dependencies {
     implementation libs.pekko.cluster.sharding.typed
     implementation libs.pekko.serialization.jackson
     testImplementation libs.groovy.all
-    testImplementation "org.codehaus.groovy:groovy-all:3.0.25"
     testImplementation platform(libs.spock)
     testImplementation libs.spock.core
     testImplementation libs.spock.spring
