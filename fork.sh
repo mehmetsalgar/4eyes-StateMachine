@@ -22,7 +22,7 @@ rm -fR "fsm-4eyes-advice"
 #fsm-***-uml-model
 mkdir "fsm-$1-uml-model"
 mkdir -p "fsm-$1-uml-model/src/main/resources"
-cp "fsm-4eyes-uml-model/build.gradle" "fsm-$1-advice"
+cp "fsm-4eyes-uml-model/build.gradle" "fsm-$1-uml-model"
 rm -fR "fsm-4eyes-uml-model"
 #fsm-***-statemachine
 mkdir "fsm-$1-statemachine"
