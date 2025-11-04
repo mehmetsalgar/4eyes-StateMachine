@@ -21,9 +21,10 @@ mkdir "fsm-$1-actionguard-impl"
 mkdir -p "fsm-$1-actionguard-impl/src/main/java/${groupId}"
 cp "fsm-4eyes-actionguard-impl/build.gradle" "fsm-$1-actionguard-impl"
 #fsm-***-event-adapter
-mkdir "fsm-$1-event-adapter"
-mkdir -p "fsm-$1-event-adapter/src/main/scala/${groupId}"
-cp "fsm-4eyes-event-adapter/build.gradle" "fsm-$1-event-adapter"
+#only necessary for Event / State Machine evolution
+#mkdir "fsm-$1-event-adapter"
+#mkdir -p "fsm-$1-event-adapter/src/main/scala/${groupId}"
+#cp "fsm-4eyes-event-adapter/build.gradle" "fsm-$1-event-adapter"
 #fsm-***-statemachine-facade
 mkdir "fsm-$1-statemachine-facade"
 mkdir -p "fsm-$1-statemachine-facade/src/main/java/${groupId}"
