@@ -162,11 +162,14 @@ targetFileName=$(echo "FSMPekko4EyesApplication" | sed "s|4Eyes|${camelCase}|g")
 sedApplicationCommand="s|FSMPekko4EyesApplication|${targetFileName}|g;"
 sedApplicationCommand="${sedApplicationCommand}s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedApplicationCommand="${sedApplicationCommand}/Configuration/d"
+sedApplicationCommand="${sedApplicationCommand}/SMActionConfiguration/d"
+sedApplicationCommand="${sedApplicationCommand}/SMGuardConfiguration/d"
 sed "${sedApplicationCommand}" "fsm-4eyes-application/src/main/java/org/salgar/fsm/pekko/foureyes/FSMPekko4EyesApplication.java" > "fsm-$1-application/src/main/java/${groupId}/${targetFileName}.java"
 
 #Starter.java
-sedStarterCommand="/StreamConfig\.apply/{N;N;N;N;N;N;d;};"
-sedStarterCommand="${sedStarterCommand}/StreamConfig/d;"
+sedStarterCommand="/SMStreamConfig\.apply/{N;N;N;N;N;N;d;};"
+sedStarterCommand="${sedStarterCommand}/SMStreamConfig/d;"
+sedStarterCommand="${sedStarterCommand}/SMConsumerConfig/d;"
 sedStarterCommand="${sedStarterCommand}/CreditSMProjection\.init/{N;N;N;d;};"
 sedStarterCommand="${sedStarterCommand}/CreditSMProjection/d;"
 sedStarterCommand="${sedStarterCommand}s|org.salgar.fsm.pekko.foureyes.credit|$2.credit|g;"
