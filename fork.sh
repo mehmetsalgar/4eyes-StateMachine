@@ -123,7 +123,6 @@ cp "fsm-4eyes-application/src/main/resources/bootstrap.yml" "fsm-$1-application/
 cp "fsm-4eyes-application/src/main/resources/logback.xml" "fsm-$1-application/src/main/resources/logback.xml"
 cp -R "fsm-4eyes-application/helm" "fsm-$1-application/helm"
 cp "fsm-4eyes-application/build.gradle" "fsm-$1-application"
-rm -fR "fsm-4eyes-application"
 camelCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=toupper(substr($0,1,1)) substr($0,2)} 1')
 hyphenCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=substr($0,1,1) substr($0,2)} 1')
 targetFileName=$(echo "FSMPekko4EyesApplication" | sed "s|4Eyes|${camelCase}|g")
@@ -156,7 +155,9 @@ sed "${sedApplicationYmlCommand}" "fsm-4eyes-application/src/main/resources/appl
 #Helm
 sed "s|4eyes|$1|g" "fsm-4eyes-application/helm/values.yaml" > "fsm-$1-application/helm/values.yaml"
 sed "s|foureyes|$1|g" "fsm-4eyes-application/helm/Chart.yaml" > "fsm-$1-application/helm/Chart.yaml"
+rm -fR "fsm-4eyes-application"
 
+#root elements
 #settings.gradle
 sedCommand="s|fsm-4eyes-uml-model|fsm-$1-uml-model|g;"
 sedCommand="${sedCommand}s|fsm-4eyes-advice|fsm-$1-advice|g;"
