@@ -1,12 +1,29 @@
 #!/bin/bash
 groupId=$(echo $2 | sed 's|\.|/|g')
+#4eyes-address-check
+rm -fR "4eyes-address-check-api"
+rm -fR "4eyes-address-check-impl"
+#4eyes-credit-score
+rm -fR "4eyes-credit-score-api"
+rm -fR "4eyes-credit-score-impl"
+#4eyes-fraud-prevention
+rm -fR "4eyes-fraud-prevention-api"
+rm -fR "4eyes-fraud-prevention-impl"
+#4eyes-notifier
+rm -fR "4eyes-notifier-api"
+rm -fR "4eyes-notifier-impl"
+#customer-relationship-adapter
+rm -fR "customer-relationship-adapter"
+rm -fR "customer-relationship-adapter-impl"
 #fsm-***-advice
 mkdir "fsm-$1-advice"
 cp "fsm-4eyes-advice/build.gradle" "fsm-$1-advice"
+rm -fR "fsm-4eyes-advice"
 #fsm-***-uml-model
 mkdir "fsm-$1-uml-model"
 mkdir -p "fsm-$1-uml-model/src/main/resources"
 cp "fsm-4eyes-uml-model/build.gradle" "fsm-$1-advice"
+rm -fR "fsm-4eyes-uml-model"
 #fsm-***-statemachine
 mkdir "fsm-$1-statemachine"
 cp "fsm-4eyes-statemachine/.scalafmt.conf" "fsm-$1-statemachine"
@@ -16,10 +33,12 @@ mkdir -p "fsm-$1-statemachine/src/main/mwe2"
 sedStatemachineMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedStatemachineMwe="${sedStatemachineMwe}s|4eyes|$1|g"
 sed "${sedStatemachineMwe}" "fsm-4eyes-statemachine/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-statemachine/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-statemachine"
 #fsm-***-actionguard-impl
 mkdir "fsm-$1-actionguard-impl"
 mkdir -p "fsm-$1-actionguard-impl/src/main/java/${groupId}"
 cp "fsm-4eyes-actionguard-impl/build.gradle" "fsm-$1-actionguard-impl"
+rm -fR "fsm-4eyes-actionguard-impl"
 #fsm-***-event-adapter
 #only necessary for Event / State Machine evolution
 #mkdir "fsm-$1-event-adapter"
@@ -30,6 +49,7 @@ mkdir "fsm-$1-statemachine-facade"
 mkdir -p "fsm-$1-statemachine-facade/src/main/java/${groupId}"
 mkdir -p "fsm-$1-statemachine-facade/src/main/scala/${groupId}"
 cp "fsm-4eyes-statemachine-facade/build.gradle" "fsm-$1-statemachine-facade"
+rm -fR "fsm-4eyes-statemachine-facade"
 #fsm-***-model
 mkdir "fsm-$1-model"
 mkdir -p "fsm-$1-model/src/main/mwe2"
@@ -37,6 +57,7 @@ cp "fsm-4eyes-model/build.gradle" "fsm-$1-model"
 sedModelMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedModelMwe="${sedModelMwe}s|4eyes|$1|g"
 sed "${sedModelMwe}" "fsm-4eyes-model/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-model/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-model"
 #fsm-***-protobuf
 mkdir "fsm-$1-protobuf"
 mkdir -p "fsm-$1-protobuf/src/main/mwe2"
@@ -44,6 +65,7 @@ cp "fsm-4eyes-protobuf/build.gradle" "fsm-$1-protobuf"
 sedProtobufMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedProtobufMwe="${sedProtobufMwe}s|4eyes|$1|g"
 sed "${sedProtobufMwe}" "fsm-4eyes-protobuf/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-protobuf/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-protobuf"
 #fsm-***-converter
 mkdir "fsm-$1-converter"
 mkdir -p "fsm-$1-converter/src/main/mwe2"
@@ -51,6 +73,7 @@ cp "fsm-4eyes-converter/build.gradle" "fsm-$1-converter"
 sedConverterMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedConverterMwe="${sedConverterMwe}s|4eyes|$1|g"
 sed "${sedConverterMwe}" "fsm-4eyes-converter/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-converter/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-converter"
 #fsm-****-command
 mkdir "fsm-$1-command"
 mkdir -p "fsm-$1-command/src/main/mwe2"
@@ -58,6 +81,7 @@ cp "fsm-4eyes-command/build.gradle" "fsm-$1-command"
 sedCommandMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedCommandMwe="${sedCommandMwe}s|4eyes|$1|g"
 sed "${sedCommandMwe}" "fsm-4eyes-command/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-command/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-command"
 #fsm-***-kafka
 mkdir "fsm-$1-kafka"
 mkdir -p "fsm-$1-kafka/src/main/mwe2"
@@ -66,6 +90,7 @@ cp "fsm-4eyes-kafka/build.gradle" "fsm-$1-kafka"
 sedKafkaMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedKafkaMwe="${sedKafkaMwe}s|4eyes|$1|g"
 sed "${sedKafkaMwe}" "fsm-4eyes-kafka/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-kafka/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-kafka"
 #fsm-***-elasticsearch-statemachine-adapter
 mkdir "fsm-$1-elasticsearch-statemachine-adapter"
 cp "fsm-4eyes-elasticsearch-statemachine-adapter/.scalafmt.conf" "fsm-$1-elasticsearch-statemachine-adapter"
@@ -74,6 +99,7 @@ mkdir -p "fsm-$1-elasticsearch-statemachine-adapter/src/main/mwe2"
 sedESSMAdapMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedESSMAdapMwe="${sedESSMAdapMwe}s|4eyes|$1|g"
 sed "${sedESSMAdapMwe}" "fsm-4eyes-elasticsearch-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-elasticsearch-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-elasticsearch-statemachine-adapter"
 #fsm-***-projections-statemachine-adapter
 mkdir "fsm-$1-projections-statemachine-adapter"
 cp "fsm-4eyes-projections-statemachine-adapter/.scalafmt.conf" "fsm-$1-projections-statemachine-adapter"
@@ -82,10 +108,12 @@ mkdir -p "fsm-$1-projections-statemachine-adapter/src/main/mwe2"
 sedProjSMAdapMwe="s|org.salgar.fsm.pekko.foureyes|$2|g;"
 sedProjSMAdapMwe="${sedProjSMAdapMwe}s|4eyes|$1|g"
 sed "${sedProjSMAdapMwe}" "fsm-4eyes-projections-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2" > "fsm-$1-projections-statemachine-adapter/src/main/mwe2/GenerateWorkflow.mwe2"
+rm -fR "fsm-4eyes-projections-statemachine-adapter"
 #fsm-***-projections
 mkdir "fsm-$1-projections"
 mkdir -p "fsm-$1-projections/src/main/scala/${groupId}"
 cp "fsm-4eyes-projections/build.gradle" "fsm-$1-projections"
+rm -fR "fsm-4eyes-projections"
 #fsm-***-application
 mkdir "fsm-$1-application"
 mkdir -p "fsm-$1-application/src/main/java/${groupId}"
@@ -95,7 +123,7 @@ cp "fsm-4eyes-application/src/main/resources/bootstrap.yml" "fsm-$1-application/
 cp "fsm-4eyes-application/src/main/resources/logback.xml" "fsm-$1-application/src/main/resources/logback.xml"
 cp -R "fsm-4eyes-application/helm" "fsm-$1-application/helm"
 cp "fsm-4eyes-application/build.gradle" "fsm-$1-application"
-
+rm -fR "fsm-4eyes-application"
 camelCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=toupper(substr($0,1,1)) substr($0,2)} 1')
 hyphenCase=$(echo "${1}" | awk 'BEGIN{FS="";RS="-";ORS=""} {$0=substr($0,1,1) substr($0,2)} 1')
 targetFileName=$(echo "FSMPekko4EyesApplication" | sed "s|4Eyes|${camelCase}|g")

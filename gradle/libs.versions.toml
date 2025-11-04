@@ -85,9 +85,3 @@ spring-kafka = { group = "org.springframework.kafka", name = "spring-kafka" }
 spring-kafka-test = { group = "org.springframework.kafka", name = "spring-kafka-test" }
 spring-web = { group = "org.springframework", name = "spring-web" }
 sl4j-api = { group = "org.slf4j", name = "slf4j-api" }
-xtend-lib = { group = "org.eclipse.xtend", name = "org.eclipse.xtend.lib", version.ref = "xtext" }
-xtext = { group = "org.eclipse.xtext", name = "org.eclipse.xtext", version.ref = "xtext" }
-xtext-core = { group = "org.eclipse.xtext", name = "org.eclipse.xtext", version.ref = "xtext" }
-xtext-xbase = { group = "org.eclipse.xtext", name = "org.eclipse.xtext.xbase", version.ref = "xtext" }
-xtext-generator = { group = "org.eclipse.xtext", name = "org.eclipse.xtext.xtext.generator", version.ref = "xtext" }
-
